@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "2_navigation_facit",
-    "slug": "2_navigation_facit",
+    "name": "BoatAPP",
+    "slug": "BoatAPP",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
