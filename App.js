@@ -66,7 +66,7 @@ function App() {
         </Stack.Navigator>
       ) : isAuthenticated === false ? (
         <Stack.Navigator>
-          <Stack.Screen name="CreateLogin" children={() => <ProfileCreateLoginScreen onTrigger={handleTrigger} />} />
+          <Stack.Screen  name="CreateLogin" children={() => <ProfileCreateLoginScreen onTrigger={handleTrigger} />} options={{ headerShown: false }}/>
           <Stack.Screen name="Login" children={() => <ProfileLoginScreen onTrigger={handleTrigger}/>} />
         </Stack.Navigator>
       ) : isAuthenticated === true ? (
