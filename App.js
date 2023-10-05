@@ -4,10 +4,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 
-
 import BoatsScreen from "./components/boatRenterComponents/BoatsScreen";
 import BoatPostScreen from "./components/boatOwnerComponents/BoatPostScreen";
-import SearchScreen from "./components/SearchScreen";
+import SearchScreen from "./components/boatRenterComponents/SearchScreen";
 import ProfileLoggedInScreen from "./components/profileComponents/ProfileLoggedInScreen";
 import ProfileCreateLoginScreen from "./components/profileComponents/ProfileCreateLoginScreen";
 import ProfileLoginScreen from "./components/profileComponents/ProfileLoginScreen";
@@ -18,18 +17,16 @@ import UpdateProfile from "./components/profileComponents/UpdateProfile";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { getBoatOwner, getToken } from "./utils/AuthService.js";
+import BoatScreen from "./components/boatRenterComponents/BoatScreen";
 
 //Her oprettes en instans af tabnavigator.
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [boatOwner, setBoatOwner] = useState(null);
   const checkAuthenticationStatus = async () => {
-    
     try {
       const userToken = await getToken();
       if (userToken !== null) {
@@ -45,18 +42,17 @@ function App() {
   };
 
   useEffect(() => {
-    setIsAuthenticated('loading');
+    setIsAuthenticated("loading");
     checkAuthenticationStatus();
   }, []);
 
   const handleTrigger = async () => {
-          
-    setIsAuthenticated('loading') 
-    
+    setIsAuthenticated("loading");
+
     setTimeout(() => {
       checkAuthenticationStatus();
     }, 1000);
-}
+  };
 
   return (
     <NavigationContainer>
@@ -66,8 +62,17 @@ function App() {
         </Stack.Navigator>
       ) : isAuthenticated === false ? (
         <Stack.Navigator>
-          <Stack.Screen  name="CreateLogin" children={() => <ProfileCreateLoginScreen onTrigger={handleTrigger} />} options={{ headerShown: false }}/>
-          <Stack.Screen name="Login" children={() => <ProfileLoginScreen onTrigger={handleTrigger}/>} />
+          <Stack.Screen
+            name="CreateLogin"
+            children={(props) => (
+              <ProfileCreateLoginScreen onTrigger={handleTrigger} {...props} />
+            )}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            children={(props) => <ProfileLoginScreen onTrigger={handleTrigger} {...props}/>}
+          />
         </Stack.Navigator>
       ) : isAuthenticated === true ? (
         <Tab.Navigator
@@ -90,20 +95,55 @@ function App() {
             },
           })}
         >
-          { boatOwner === 'false' ? <Tab.Screen name="Både" component={BoatsScreen} /> : <Tab.Screen name="Opslag" component={BoatPostScreen} /> }
-          <Tab.Screen name="ProfileStack" options={{ headerShown: false }}> 
-          {() => (
-            <Stack.Navigator>
-              <Stack.Screen name="Profile" children={() => <ProfileLoggedInScreen onTrigger={handleTrigger} />} />
-              <Stack.Screen name="UpdateProfile" children={() => <UpdateProfile onTrigger={handleTrigger} />} />
-          </Stack.Navigator>
+          {boatOwner === "false" ? (
+            <Tab.Screen
+              name="Både"
+              component={LoadingScreen}
+              options={{ headerShown: false }}
+            />
+          ) : (
+            <Tab.Screen name="Opslag" component={BoatPostScreen} />
           )}
-           </Tab.Screen>
-          <Tab.Screen name="Search" component={SearchScreen} />
+          <Tab.Screen name="ProfileStack" options={{ headerShown: false }}>
+            {() => (
+              <Stack.Navigator>
+                <Stack.Screen
+                  name="Profile"
+                  children={(props) => (
+                    <ProfileLoggedInScreen onTrigger={handleTrigger} {...props}/>
+                  )}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="UpdateProfile"
+                  children={(props) => <UpdateProfile onTrigger={handleTrigger} {...props}/>}
+                />
+              </Stack.Navigator>
+            )}
+          </Tab.Screen>
+          <Tab.Screen name="BoatPostStack" options={{ headerShown: false }}>
+            {() => (
+              <Stack.Navigator>
+                <Stack.Screen
+                  name="Search"
+                  children={(props) => <SearchScreen {...props} />}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="BoatScreen"
+                  children={(props) => <BoatScreen {...props} />}
+                />
+              </Stack.Navigator>
+            )}
+          </Tab.Screen>
         </Tab.Navigator>
       ) : (
         <Stack.Navigator>
-           <Stack.Screen name="Error" children={() => <ErrorScreen errorMessage="Der er sket en fejl"/>} />
+          <Stack.Screen
+            name="Error"
+            children={(props) => <ErrorScreen errorMessage="Der er sket en fejl" {...props}/>}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       )}
     </NavigationContainer>

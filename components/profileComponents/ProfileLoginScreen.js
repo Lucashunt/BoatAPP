@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, ActivityIndicator } from 'react-native';
 import PocketBase from 'pocketbase';
 import { storeToken } from '../../utils/AuthService.js';
-import { useNavigation } from '@react-navigation/native';
+
 
 
 
 export default function ProfileLoginScreen({onTrigger}) {
-  const navigation = useNavigation();
   
   const pb = new PocketBase('https://pocketbaselucashunt.fly.dev');
   const [email, setEmail] = useState('');

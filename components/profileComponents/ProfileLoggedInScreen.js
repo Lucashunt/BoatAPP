@@ -10,10 +10,10 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import UpdateProfile from './UpdateProfile.js'; 
 import { NavigationContainer } from "@react-navigation/native";
 const Stack = createNativeStackNavigator();
-import { useNavigation } from '@react-navigation/native';
 
-export default function ProfileLoggedInScreen ({onTrigger}) {
-    const navigation = useNavigation();
+
+export default function ProfileLoggedInScreen ({onTrigger, navigation}) {
+
     const goToUpdateScreen = () => {
         navigation.navigate('UpdateProfile'); 
       };

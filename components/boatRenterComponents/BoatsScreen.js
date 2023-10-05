@@ -4,53 +4,40 @@ import PocketBase from 'pocketbase';
 import { useState } from 'react';
 
 //Funktionen tager data fra databasen og printer det i en <Text>
-function Boats ({name}) {
+function Boats ({name, onTrigger}) {
 
     return (
         <>
             <Text>{name}</Text>
+            <Button title='Se båd' onPress={onTrigger}></Button>
         </>
     )
 }
 
 
 
-function BoatScreen({prop}) {
-    const pb = new PocketBase('https://pocketbaselucashunt.fly.dev');
+export default function BoatsScreen({fromSearch, onTrigger}) {
+    
+    const [boats, setBoats] = useState(fromSearch);
 
-    const [boats, setBoats] = useState([]);
 
-    //Henter både fra pocketbasedatabasen og ændre const boats til det hentede data
-    async function getBoats () {
-        setBoats([])
-        const response = await pb.collection('boatPosts').getFullList(200 /* batch size */, {
-            sort: '-created',
-        });
-            response.map((boat) => {
-                console.log(boat.name)
-                setBoats(boats => [...boats, boat.name])
-            })
-            // setBoats([...response.data()]);
-      
-        console.log(response[0].name)
-    }
 
+    console.log(boats)
     return (
         
         <View style={styles.container}>
-         {/*  Henter bådtyper når der klikkes på knappen */}
-            <Button title="Hent både" onPress={() => getBoats()}/>
-            {
-                boats.map((boat) => {
-                    return <Boats name={boat}/>
+            <View><Text>hello</Text></View>
+          
+            { boats.length > 0 ?
+                boats.map((boat, index) => {
+                    return <Boats key={index} name={boat.name} onTrigger={onTrigger}/>
                 })
+                : <Text>Der er ingen både</Text>
             }
         </View>
        
     );
 }
-
-export default BoatScreen
 
 //Lokal styling til brug i SettingsScreen
 const styles = StyleSheet.create({
