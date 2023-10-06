@@ -4,12 +4,12 @@ import PocketBase from 'pocketbase';
 import { useState } from 'react';
 
 //Funktionen tager data fra databasen og printer det i en <Text>
-function Boats ({name, onTrigger}) {
+function Boats ({id, name, onTrigger}) {
 
     return (
         <>
             <Text>{name}</Text>
-            <Button title='Se båd' onPress={onTrigger}></Button>
+            <Button title='Se båd' onPress={()=> onTrigger({ id })}></Button>
         </>
     )
 }
@@ -22,15 +22,14 @@ export default function BoatsScreen({fromSearch, onTrigger}) {
 
 
 
-    console.log(boats)
+    
     return (
         
         <View style={styles.container}>
-            <View><Text>hello</Text></View>
           
             { boats.length > 0 ?
                 boats.map((boat, index) => {
-                    return <Boats key={index} name={boat.name} onTrigger={onTrigger}/>
+                    return <Boats key={index} name={boat.name} id={boat.id} onTrigger={onTrigger}/>
                 })
                 : <Text>Der er ingen både</Text>
             }

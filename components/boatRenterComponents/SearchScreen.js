@@ -13,9 +13,9 @@ const pb = new PocketBase("https://pocketbaselucashunt.fly.dev");
 
 export default function SearchScreen({ navigation}) {
 
-    function navigateToBoat() {
-       
-        navigation.navigate('BoatScreen', { data: 'Hello from Home!' })
+    function navigateToBoat({id}) {
+       console.log(id)
+        navigation.navigate('BoatScreen', { id: id })
         
     }
 
