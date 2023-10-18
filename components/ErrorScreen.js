@@ -1,6 +1,8 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
+
+//Denne komponent bruges hver gang der sker en fejl, så vises denne screen.
 export default function ErrorScreen ({errorMessage}) {
     
     return (

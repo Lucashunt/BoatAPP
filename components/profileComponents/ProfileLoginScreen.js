@@ -4,7 +4,7 @@ import PocketBase from 'pocketbase';
 import { storeToken } from '../../utils/AuthService.js';
 
 
-
+//Denne skærm er til at brugeren kan logge ind hvis han allerede har en konto
 
 export default function ProfileLoginScreen({onTrigger}) {
   
@@ -15,9 +15,10 @@ export default function ProfileLoginScreen({onTrigger}) {
 
 
   async function loginUser() {
+    //Starter med at sætter loadingstate til true så brugeren ved at der bliver arbejdet på at logge ind
     setLoadingState(true);
 
-    
+    //Logger kunden ind med email og password
     try {
       const authData = await pb.collection('users').authWithPassword(
         email,
@@ -30,6 +31,7 @@ export default function ProfileLoginScreen({onTrigger}) {
         setLoadingState(false);
       }
     } catch (error) {
+      //kan i fremtiden laves så brugeren får besked om at der er sket en fejl
       console.error('Error:', error);
       setLoadingState(false);
     }
@@ -52,6 +54,8 @@ export default function ProfileLoginScreen({onTrigger}) {
         secureTextEntry={true}
       />
       <Button title="Log ind" onPress={loginUser} />
+
+      //Tenary operator der viser en loading bar hvis loadingstate er true
       {loadingState ? <ActivityIndicator size="large" color="#0000ff" /> : null}
       
 

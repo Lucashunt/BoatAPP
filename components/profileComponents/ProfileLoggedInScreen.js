@@ -1,42 +1,50 @@
-import {Button, SafeAreaView, StyleSheet, Text, View} from "react-native";
+import {Button, StyleSheet, Text, View} from "react-native";
 import * as React from "react";
 import PocketBase from 'pocketbase';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { logout, getID, updateBoatOwner } from '../../utils/AuthService.js';
 const pb = new PocketBase('https://pocketbaselucashunt.fly.dev');
-import { useEffect } from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
- 
-import UpdateProfile from './UpdateProfile.js'; 
-import { NavigationContainer } from "@react-navigation/native";
-const Stack = createNativeStackNavigator();
+
+
+
 
 
 export default function ProfileLoggedInScreen ({onTrigger, navigation}) {
 
+    //funktionen der tager brugeren til update profil skærmen
     const goToUpdateScreen = () => {
         navigation.navigate('UpdateProfile'); 
       };
 
+    //funktionen der logger brugeren ud, ved at bruge hjælpefunktionen fra utils AuthService, samt onTrigger funktionen der er sendt med fra App.js,
+    //der gør at brugeren informationen bliver opdateret i App.js i storage
     const loggingOut = async () => {
         await logout()
          onTrigger()
      }
+     //her gemmes og opdateres brugeren profiloplysninger 
     const [profile, setProfile] = useState([]);
+
+    //bruges denne funktion overhovdet??
     const [id, setId] = useState('');
+
     const getUserInformation = async () => {
+
+        //getID() er en funktione fra utls, der henter id fra storage
         const ID = await getID()
         const record = await pb.collection('users').getOne(ID);
        setId(ID)
         setProfile(record)
     }
 
+    //denne funktione bruges til at ændre brugeren til at se bådlejer sider eller bådejer sider, samt opdaterer det i databasen
     const changeBoatOwner = async () => {
         const ID = await getID()
        
         const data = {
             boatOwner: !profile.boatOwner
         }
+
         await pb.collection('users').update(ID, data)
         updateBoatOwner(data.boatOwner.toString())
         setProfile({...profile, boatOwner: !profile.boatOwner})
@@ -44,7 +52,7 @@ export default function ProfileLoggedInScreen ({onTrigger, navigation}) {
         
     }
 
-
+    //data om brugeren hentes ved screen load, kan evt laves om til at hele skærmen bruger loadingstate?
     useEffect(() => {
         getUserInformation()
       }, []);

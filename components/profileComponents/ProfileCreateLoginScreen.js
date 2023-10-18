@@ -5,7 +5,7 @@ import PocketBase from 'pocketbase';
 import { storeToken } from '../../utils/AuthService.js';
 
 
-
+//denne screen er til at brugeren kan oprette en profil
 
 export default function ProfileCreateLoginScreen({onTrigger, navigation }) {
  
@@ -16,10 +16,13 @@ export default function ProfileCreateLoginScreen({onTrigger, navigation }) {
   const [password, setPassword] = useState('');
   const [loadingState, setLoadingState] = useState(false);
 
+  //funktionen der tager brugeren til login skærmen
   const goToLoginScreen = () => {
     navigation.navigate('Login'); 
   };
 
+  //funktione der tager den email, brugernavn og adgangskode som brugeren har indtastet og oprettet profilen, 
+  //samt logger ind og gemmer oplysninger om brugeren i storage 
   async function createUser() {
     setLoadingState(true);
     const data = {
@@ -31,15 +34,17 @@ export default function ProfileCreateLoginScreen({onTrigger, navigation }) {
     };
     
     try {
+      //opretter brugeren
       await pb.collection('users').create(data);
     
-
+      //Logger brugeren ind
       const authData = await pb.collection('users').authWithPassword(
         email,
         password
       );
 
       if (authData) {
+        //bruger Utils Authservice funktion til at gemme information om brugeren
         storeToken({userToken: pb.authStore.token, userID: pb.authStore.model.id, boatOwner: pb.authStore.model.boatOwner.toString()});
        
         onTrigger(); 

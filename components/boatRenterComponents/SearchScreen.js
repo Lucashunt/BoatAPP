@@ -6,56 +6,76 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Slider from "@react-native-community/slider";
 import LoadingScreen from "../LoadingScreen";
 import BoatsScreen from "./BoatsScreen";
+import { getID } from "../../utils/AuthService.js" 
+import {format as prettyFormat} from 'pretty-format';
 
-
+//Bruges til at oprette forbindelse til databasen og hente data
 import PocketBase from "pocketbase";
 const pb = new PocketBase("https://pocketbaselucashunt.fly.dev");
 
 export default function SearchScreen({ navigation}) {
 
     function navigateToBoat({id}) {
-       console.log(id)
         navigation.navigate('BoatScreen', { id: id })
         
     }
 
+    //Disse tre states bruges til at ændre viewet alt efter den data der kommer fra databasen
     const [searching, setSearching] = useState(false);
     const [searchResult, setSearchResult] = useState([]);
     const [errorSearching, setErrorSearching] = useState(false);
 
-  const [harbour, setHarbour] = useState("gilleleje");
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1000);
-  const [typeOfBoat, setTypeOfBoat] = useState("sailboat");
-  const [dateStart, setDateStart] = useState(new Date());
-  const [dateEnd, setDateEnd] = useState(new Date());
+    //disse states bruges til at gemme den data brugeren indtaster
+    const [harbour, setHarbour] = useState("gilleleje");
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(1000);
+    const [typeOfBoat, setTypeOfBoat] = useState("sailboat");
+    const [dateStart, setDateStart] = useState(new Date());
+    const [dateEnd, setDateEnd] = useState(new Date());
 
+  //denne funktion bruges til at nulstille søgningen
+  function resetSearch() {
+    setSearchResult([]);
+    setErrorSearching('');
+  }
+
+  //Denne funktion bruges til at sætte startdatoen
   const onChangeStart = (event, selectedDate) => {
     const currentDate = selectedDate;
     setDateStart(currentDate);
   };
-
+  
+  //Denne funktion bruges til at sætte slutdatoen
   const onChangeEnd = (event, selectedDate) => {
     const currentDate = selectedDate;
     setDateEnd(currentDate);
   };
 
+  //Denne funktion er den centrale funktionalitet i søgeskærmen, her hentes data fra databasen og filtreres efter de forskellige parametre,
+  //databasen sender kun de første 10 resultater, og kun dem der matcher søgekriterierne. 
+  //Herefter filtreres de efter start og slutdatoen, i filteredPosts funktionen. 
   async function search() {
     setSearching(true);
     const filter = `typeOfBoat = '${typeOfBoat}' && harbour = '${harbour}' && price >= ${minPrice} && price <= ${maxPrice}`;
 
+    //Henter fra databasen
     try {
       const resultList = await pb.collection("boatPosts").getList(1, 10, {
         sort: "-created",
         filter: filter,
+        expand: "starred"
       });
 
+     //filtere yderlige resultaterne fra databasen efter dato
       const filteredPosts = resultList.items.filter((post) => {
         const resultDateStart = new Date(post.dateStart);
         const resultDateEnd = new Date(post.dateEnd);
 
         return dateStart >= resultDateStart && dateEnd <= resultDateEnd;
       });
+
+
+      //viser de filtrerede post, og hvis der ingen post er skriver der til brugeren at der ingen både er der matcher søgekriterierne.
       setSearchResult(filteredPosts);
       if (filteredPosts.length === 0) {
         setErrorSearching("Der er ingen både der matcher din søgning!");
@@ -136,7 +156,7 @@ export default function SearchScreen({ navigation}) {
 
       : (
     
-        <BoatsScreen fromSearch={searchResult} onTrigger={navigateToBoat}/>
+        <BoatsScreen fromSearch={searchResult} onTrigger={navigateToBoat} onPress={resetSearch}/>
 
 
       ) 

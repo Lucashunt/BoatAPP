@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
+//Denne komponent bruges hver gang der er Async data, hvor den vises indtil daten er hentet
 const LoadingScreen = () => {
     return (
         <View style={styles.container}>
